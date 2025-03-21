@@ -10,7 +10,7 @@ public class ResetDataController {
     @Autowired
     ResetData resetData;
 
-    @GetMapping("/delete-data")
+    @GetMapping("/manager/delete-data")
     public String supprimerDonnee() {
         resetData.initBase();
         return "redirect:/";
