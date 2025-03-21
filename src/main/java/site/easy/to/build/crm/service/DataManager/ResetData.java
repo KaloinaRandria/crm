@@ -18,7 +18,7 @@ public class ResetData {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
 
         jdbcTemplate.execute("TRUNCATE TABLE contract_settings");
-        jdbcTemplate.execute("TRUNCATE TABLE email_templates");
+        jdbcTemplate.execute("TRUNCATE TABLE email_template");
         jdbcTemplate.execute("TRUNCATE TABLE file");
         jdbcTemplate.execute("TRUNCATE TABLE google_drive_file");
         jdbcTemplate.execute("TRUNCATE TABLE lead_action");
