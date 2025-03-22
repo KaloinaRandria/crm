@@ -45,6 +45,10 @@ public class Depense {
         this.montant = montant;
     }
 
+    public void setMontant (String montant) {
+        this.setMontant(new BigDecimal(montant));
+    }
+
     public LocalDateTime getDate() {
         return date;
     }
