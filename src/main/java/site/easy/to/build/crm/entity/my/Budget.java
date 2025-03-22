@@ -54,4 +54,15 @@ public class Budget {
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
+
+    public Budget() {
+
+    }
+
+    public Budget(Integer idBudget, Customer customer, BigDecimal montant, LocalDateTime date) {
+        this.idBudget = idBudget;
+        this.customer = customer;
+        this.montant = montant;
+        this.date = date;
+    }
 }
