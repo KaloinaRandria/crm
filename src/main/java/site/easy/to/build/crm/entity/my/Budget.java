@@ -1,6 +1,8 @@
 package site.easy.to.build.crm.entity.my;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import site.easy.to.build.crm.entity.Customer;
 
 import java.math.BigDecimal;
@@ -18,9 +20,11 @@ public class Budget {
     private Customer customer;
 
     @Column(name = "montant")
+    @Positive(message = "Montant negatif")
     private BigDecimal montant;
 
     @Column(name = "date")
+    @NotNull(message = "Date is required")
     private LocalDateTime date;
 
     public Integer getIdBudget() {
@@ -47,12 +51,20 @@ public class Budget {
         this.montant = montant;
     }
 
+    public void setMontant(String montant) {
+        this.setMontant(new BigDecimal(montant));
+    }
+
     public LocalDateTime getDate() {
         return date;
     }
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public void setDate(String date) {
+        this.setDate(LocalDateTime.parse(date));
     }
 
     public Budget() {
