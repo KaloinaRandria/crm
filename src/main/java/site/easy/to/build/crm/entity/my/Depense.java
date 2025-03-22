@@ -1,6 +1,8 @@
 package site.easy.to.build.crm.entity.my;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Range;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 
@@ -16,6 +18,7 @@ public class Depense {
     private Integer idDepense;
 
     @Column(name = "montant")
+    @Range(min = 0)
     private BigDecimal montant;
 
     @Column(name = "date")

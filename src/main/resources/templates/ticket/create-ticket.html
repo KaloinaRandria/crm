@@ -138,7 +138,10 @@
 <!--                                champ depense-->
                                 <label class="m-t-20" for="depense">Spent (Depense):</label>
                                 <div class="input-group">
-                                    <input type="number" id="depense" name="depense" class="form-control">
+                                    <input th:field="*{montantDepense}" type="number" id="depense" name="montantDepense" class="form-control">
+                                </div>
+                                <div class="input-group">
+                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('montantDepense')}" th:errors="*{montantDepense}"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary m-t-20">Create ticket</button>
                             </form>
