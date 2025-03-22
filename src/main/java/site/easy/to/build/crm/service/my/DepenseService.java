@@ -22,5 +22,5 @@ public class DepenseService {
     public List<Depense> getAllDepenses() {
         return depenseRepository.findAll();
     }
-    
+
 }
