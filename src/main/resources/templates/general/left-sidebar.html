@@ -46,7 +46,7 @@
 
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"  class="nav-small-cap">--- Budget</li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" >
-                    <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)">
+                    <a class="waves-effect waves-dark" th:href="${home + 'manager/budget/show-budget-page'}">
 <!--                        <i class="fa-money"></i>-->
                         <span class="hide-menu">Budget Customer</span>
                     </a>
