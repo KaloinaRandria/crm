@@ -17,9 +17,9 @@ public class BudgetController {
         this.customerService = customerService;
     }
 
-//    @GetMapping("/add-budget")
-//    public String showAddBudgetForm(HttpServletRequest request) {
-//
-//        return "";
-//    }
+    @GetMapping("/add-budget")
+    public String showAddBudgetForm(HttpServletRequest request) {
+
+        return "";
+    }
 }
