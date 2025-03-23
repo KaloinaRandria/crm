@@ -7,9 +7,11 @@ import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.my.Depense;
+import site.easy.to.build.crm.entity.my.api.TicketModel;
 import site.easy.to.build.crm.repository.my.DepenseRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,6 +69,49 @@ public class DepenseService {
     public void deleteByLead(Lead lead) {
         depenseRepository.deleteByLead(lead);
     }
+
+   public List<Ticket> getAllTicketsByDate(LocalDateTime dateTime) {
+        List<Depense> tickets = depenseRepository.findDepenseTicketByDate(dateTime);
+        List<Ticket> ticketList = new ArrayList<Ticket>();
+        for (Depense depense : tickets) {
+            Ticket ticket = depense.getTicket();
+            ticket.setMontantDepense(depenseRepository.findLastValueTicket(ticket.getTicketId() , dateTime).get(0).getMontant().toString());
+            ticketList.add(ticket);
+        }
+        return ticketList;
+   }
+
+   public List<Lead> getAllLeadsByDate(LocalDateTime dateTime) {
+        List<Depense> leads = depenseRepository.findDepenseLeadByDate(dateTime);
+        List<Lead> leadList = new ArrayList<>();
+        for (Depense depense : leads) {
+            Lead lead = depense.getLead();
+            lead.setMontantDepense(depenseRepository.findLastValueLead(lead.getLeadId() , dateTime).get(0).getMontant().toString());
+            leadList.add(lead);
+        }
+        return leadList;
+   }
+
+   public List<TicketModel> getAllTicketModel(LocalDateTime dateTime) {
+        List<TicketModel> ticketModels = new ArrayList<>();
+        List<Ticket> tickets = this.getAllTicketsByDate(dateTime);
+
+        for (Ticket ticket : tickets) {
+            TicketModel ticketModel = new TicketModel();
+            ticketModel.setIdTicket(ticket.getTicketId());
+            ticketModel.setCustomerName(ticket.getCustomer().getName());
+            ticketModel.setSubject(ticket.getSubject());
+            ticketModel.setDateTime(ticket.getCreatedAt());
+            ticketModel.setMontantDepense(Double.parseDouble(ticket.getMontantDepense()));
+
+            ticketModels.add(ticketModel);
+        }
+
+        return ticketModels;
+   }
+
+
+
 
 
 

@@ -2,7 +2,9 @@ package site.easy.to.build.crm.service.ticket;
 
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.my.api.TicketModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TicketService {

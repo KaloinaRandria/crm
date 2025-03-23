@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.my.Budget;
+import site.easy.to.build.crm.entity.my.api.BudgetModel;
 import site.easy.to.build.crm.repository.my.BudgetRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +31,10 @@ public class BudgetService {
 
     public Budget getBudgetById(Integer id) {
         return budgetRepository.findById(id).orElse(null);
+    }
+
+    public List<Budget> getBudgetsByDate(LocalDateTime dateTime) {
+        return budgetRepository.findBudgetByDate(dateTime);
     }
 
     public List<Budget> getBudgetByCustomerAndDate(int customerId , LocalDateTime dateTime) {
@@ -70,6 +76,23 @@ public class BudgetService {
             return true;
         }
         return false;
+    }
+
+    public List<BudgetModel> getAllBudgetModels(LocalDateTime dateTime) {
+        List<BudgetModel> budgetModels = new ArrayList<>();
+        List<Budget> budgets = getBudgetsByDate(dateTime);
+
+        for (Budget budget : budgets) {
+            BudgetModel budgetModel = new BudgetModel();
+            budgetModel.setIdBudgetModel(budget.getIdBudget());
+            budgetModel.setCustomerName(budget.getCustomer().getName());
+            budgetModel.setMontant(budget.getMontant().doubleValue());
+            budgetModel.setDateTime(dateTime);
+
+            budgetModels.add(budgetModel);
+        }
+
+        return budgetModels;
     }
 
 

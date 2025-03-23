@@ -15,4 +15,7 @@ import java.util.List;
 public interface BudgetRepository extends JpaRepository<Budget, Integer> {
     @Query("select b from Budget b where b.customer.customerId = :customerId AND b.date <= :dateTime")
     List<Budget> findBudgetByCustomerAndDate(@Param("customerId") int customerId , @Param("dateTime") LocalDateTime dateTime);
+
+    @Query("select b from Budget b where b.date <= :dateTime")
+    List<Budget> findBudgetByDate(@Param("dateTime") LocalDateTime dateTime);
 }
