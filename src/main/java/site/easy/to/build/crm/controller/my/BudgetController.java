@@ -59,19 +59,16 @@ public class BudgetController {
         User loggedInUser = userService.findById(userId);
 
         if (bindingResult.hasErrors()) {
-            List<User> employees = new ArrayList<>();
             List<Customer> customers;
 
             if (AuthorizationUtil.hasRole(authentication , "ROLE_MANAGER")) {
-                employees = userService.findAll();
                 customers = customerService.findAll();
             } else {
-                employees.add(loggedInUser);
                 customers = customerService.findByUserId(loggedInUser.getId());
             }
 
             model.addAttribute("customers",customers);
-            model.addAttribute("budget" , new Budget());
+            model.addAttribute("budget" , budget);
             return "my/add-budget";
         }
 
