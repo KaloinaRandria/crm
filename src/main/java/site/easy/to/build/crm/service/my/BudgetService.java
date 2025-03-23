@@ -87,7 +87,7 @@ public class BudgetService {
             budgetModel.setIdBudgetModel(budget.getIdBudget());
             budgetModel.setCustomerName(budget.getCustomer().getName());
             budgetModel.setMontant(budget.getMontant().doubleValue());
-            budgetModel.setDateTime(dateTime);
+            budgetModel.setDateTime(budget.getDate());
 
             budgetModels.add(budgetModel);
         }

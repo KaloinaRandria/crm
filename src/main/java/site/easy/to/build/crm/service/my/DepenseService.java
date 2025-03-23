@@ -118,6 +118,7 @@ public class DepenseService {
             LeadModel leadModel = new LeadModel();
             leadModel.setIdLead(lead.getLeadId());
             leadModel.setCustomerName(lead.getCustomer().getName());
+            leadModel.setLeadName(lead.getName());
             leadModel.setDateTime(lead.getCreatedAt());
             leadModel.setMontantDepense(Double.parseDouble(lead.getMontantDepense()));
 
