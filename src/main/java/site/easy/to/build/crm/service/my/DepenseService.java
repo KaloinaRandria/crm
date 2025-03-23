@@ -127,7 +127,13 @@ public class DepenseService {
         return leadModels;
    }
 
+   public Depense getDepenseByIdTicket(int idTicket) {
+        return depenseRepository.findDepenseByIdTicket(idTicket);
+   }
 
+   public Depense getDepenseByIdLead(int idLead) {
+        return depenseRepository.findDepenseByIdLead(idLead);
+   }
 
 
 

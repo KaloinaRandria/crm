@@ -42,4 +42,9 @@ public interface DepenseRepository extends JpaRepository<Depense, Integer> {
     @Query("select d from Depense d where d.lead.leadId is not null and d.date <= :dateTime")
     List<Depense> findDepenseLeadByDate(@Param("dateTime") LocalDateTime dateTime);
 
+    @Query("select d from Depense d where d.ticket.ticketId = :idTicket")
+    Depense findDepenseByIdTicket(@Param("idTicket") int idTicket);
+
+    @Query("select d from Depense d where d.lead.leadId = :idLead")
+    Depense findDepenseByIdLead(int idLead);
 }
