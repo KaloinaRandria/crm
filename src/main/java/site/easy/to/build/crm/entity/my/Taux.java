@@ -11,8 +11,8 @@ public class Taux {
     @Column(name = "id_taux")
     private  Integer idTaux;
 
-    @Column(name = "montant")
-    private double montant;
+    @Column(name = "valeur")
+    private double valeur;
 
     @Column(name = "date")
     private LocalDateTime date;
@@ -25,12 +25,12 @@ public class Taux {
         this.idTaux = idTaux;
     }
 
-    public double getMontant() {
-        return montant;
+    public double getValeur() {
+        return valeur;
     }
 
-    public void setMontant(double montant) {
-        this.montant = montant;
+    public void setValeur(double valeur) {
+        this.valeur = valeur;
     }
 
     public LocalDateTime getDate() {
@@ -43,9 +43,9 @@ public class Taux {
 
     public Taux() {}
 
-    public Taux(Integer idTaux, double montant, LocalDateTime date) {
+    public Taux(Integer idTaux, double valeur, LocalDateTime date) {
         this.idTaux = idTaux;
-        this.montant = montant;
+        this.valeur = valeur;
         this.date = date;
     }
 }

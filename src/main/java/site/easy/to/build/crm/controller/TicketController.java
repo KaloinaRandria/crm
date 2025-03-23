@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.entity.my.Depense;
 import site.easy.to.build.crm.entity.settings.TicketEmailSettings;
@@ -99,10 +100,11 @@ public class TicketController {
     }
 
     @GetMapping("/assigned-tickets")
-    public String showEmployeeTicket(Model model, Authentication authentication) {
+    public String showEmployeeTicket(Model model, Authentication authentication ,@ModelAttribute("alertMessage") String alertMessage) {
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         List<Ticket> tickets = ticketService.findEmployeeTickets(userId);
         model.addAttribute("tickets",tickets);
+        model.addAttribute("alertMessage",alertMessage);
         return "ticket/my-tickets";
     }
     @GetMapping("/create-ticket")
@@ -132,7 +134,8 @@ public class TicketController {
     @PostMapping("/create-ticket")
     public String createTicket(@ModelAttribute("ticket") @Validated Ticket ticket, BindingResult bindingResult, @RequestParam("customerId") int customerId,
                                @RequestParam Map<String, String> formParams, Model model,
-                               @RequestParam("employeeId") int employeeId, Authentication authentication ,@RequestParam(name = "montantDepense") String montantDepense) {
+                               @RequestParam("employeeId") int employeeId, Authentication authentication , @RequestParam(name = "montantDepense") String montantDepense ,
+                               RedirectAttributes redirectAttributes) {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -176,13 +179,20 @@ public class TicketController {
         ticket.setEmployee(employee);
         ticket.setCreatedAt(LocalDateTime.now());
 
-        ticketService.save(ticket);
 
         Depense depense = new Depense();
         depense.setMontant(montantDepense);
         depense.setDate(LocalDateTime.now());
         depense.setTicket(ticket);
 
+        double pourcentageDepense = budgetService.pourcentageBudget(customer.getCustomerId() , LocalDateTime.now() , Double.parseDouble(montantDepense));
+        redirectAttributes.addAttribute("alertMessage" , "");
+
+        if (pourcentageDepense > 0) {
+            redirectAttributes.addAttribute("alertMessage" , pourcentageDepense + " % du budget utiliser");
+        }
+
+        ticketService.save(ticket);
         depenseService.saveDepense(depense);
 
         return "redirect:/employee/ticket/assigned-tickets";

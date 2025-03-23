@@ -16,6 +16,8 @@ public class BudgetService {
 
     @Autowired
     DepenseService depenseService;
+    @Autowired
+    private TauxService tauxService;
 
     public void saveBudget(Budget budget) {
         budgetRepository.save(budget);
@@ -53,4 +55,25 @@ public class BudgetService {
 
         return budgetActuel;
     }
+
+    public double pourcentageBudget(int customerId , LocalDateTime dateTime , double montantDepense) {
+        double sommeBudget = this.sommeBudget(customerId , dateTime);
+        double sommeDepense = this.depenseService.sommeDepenses(customerId , dateTime) + montantDepense;
+        double pourcentage = tauxService.getTaux();
+
+        System.out.println("Budget somme: " + sommeBudget);
+        System.out.println("Depense somme: " + sommeDepense);
+
+        double valiny = (sommeDepense * 100) / sommeBudget;
+
+        if (valiny >= pourcentage) {
+            return valiny;
+        }
+        System.out.println("Pourcentage: " + valiny);
+        return 0.0;
+    }
+
+
+
+
 }

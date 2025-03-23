@@ -23,4 +23,8 @@ public class TauxService {
     public Taux getTauxById(Integer id) {
         return tauxRepository.findById(id).orElse(null);
     }
+
+    public double getTaux() {
+        return  this.getAllTaux().get(0).getValeur();
+    }
 }
