@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.entity.my.Depense;
 import site.easy.to.build.crm.entity.settings.LeadEmailSettings;
@@ -31,6 +32,7 @@ import site.easy.to.build.crm.service.drive.GoogleDriveFileService;
 import site.easy.to.build.crm.service.file.FileService;
 import site.easy.to.build.crm.service.lead.LeadActionService;
 import site.easy.to.build.crm.service.lead.LeadService;
+import site.easy.to.build.crm.service.my.BudgetService;
 import site.easy.to.build.crm.service.my.DepenseService;
 import site.easy.to.build.crm.service.settings.LeadEmailSettingsService;
 import site.easy.to.build.crm.service.user.UserService;
@@ -63,12 +65,13 @@ public class LeadController {
     private final GoogleGmailApiService googleGmailApiService;
     private final EntityManager entityManager;
     private final DepenseService depenseService;
+    private final BudgetService budgetService;
 
     @Autowired
     public LeadController(LeadService leadService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
                           LeadActionService leadActionService, GoogleCalendarApiService googleCalendarApiService, FileService fileService,
                           GoogleDriveApiService googleDriveApiService, GoogleDriveFileService googleDriveFileService, FileUtil fileUtil,
-                          LeadEmailSettingsService leadEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager , DepenseService depenseService) {
+                          LeadEmailSettingsService leadEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager , DepenseService depenseService , BudgetService budgetService) {
         this.leadService = leadService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
@@ -83,6 +86,7 @@ public class LeadController {
         this.googleGmailApiService = googleGmailApiService;
         this.entityManager = entityManager;
         this.depenseService = depenseService;
+        this.budgetService = budgetService;
     }
 
     @GetMapping("/show/{id}")
@@ -128,18 +132,20 @@ public class LeadController {
     }
 
     @GetMapping("/assigned-leads")
-    public String showAssignedEmployeeLeads(Authentication authentication, Model model) {
+    public String showAssignedEmployeeLeads(Authentication authentication, Model model, @ModelAttribute("alertMessage") String alertMessage) {
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         List<Lead> leads = leadService.findAssignedLeads(userId);
         model.addAttribute("leads", leads);
+        model.addAttribute("alertMessage", alertMessage);
         return "lead/show-my-leads";
     }
 
     @GetMapping("/created-leads")
-    public String showCreatedEmployeeLeads(Authentication authentication, Model model) {
+    public String showCreatedEmployeeLeads(Authentication authentication, Model model, @ModelAttribute("alertMessage") String alertMessage) {
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         List<Lead> leads = leadService.findCreatedLeads(userId);
         model.addAttribute("leads", leads);
+        model.addAttribute("alertMessage", alertMessage);
         return "lead/show-my-leads";
     }
 
@@ -172,7 +178,8 @@ public class LeadController {
     public String createLead(@ModelAttribute("lead") @Validated Lead lead, BindingResult bindingResult,
                              @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId,
                              Authentication authentication, @RequestParam("allFiles")@Nullable String files,
-                             @RequestParam("folderId") @Nullable String folderId, Model model ,@RequestParam(name = "montantDepense") String montantDepense) throws JsonProcessingException {
+                             @RequestParam("folderId") @Nullable String folderId, Model model , @RequestParam(name = "montantDepense") String montantDepense ,
+                             RedirectAttributes redirectAttributes) throws JsonProcessingException {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -212,13 +219,21 @@ public class LeadController {
             }
         }
 
-        Lead createdLead = leadService.save(lead);
+
 
         Depense depense = new Depense();
         depense.setMontant(montantDepense);
         depense.setDate(LocalDateTime.now());
         depense.setLead(lead);
 
+        double pourcentageDepense = budgetService.pourcentageBudget(customer.getCustomerId() , LocalDateTime.now() , Double.parseDouble(montantDepense));
+        redirectAttributes.addAttribute("alertMessage" , "");
+
+        if (pourcentageDepense > 0) {
+            redirectAttributes.addAttribute("alertMessage" , pourcentageDepense + " % du budget utiliser");
+        }
+
+        Lead createdLead = leadService.save(lead);
         depenseService.saveDepense(depense);
 
         fileUtil.saveFiles(allFiles, createdLead);

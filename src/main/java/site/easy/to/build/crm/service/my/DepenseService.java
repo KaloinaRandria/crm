@@ -25,18 +25,37 @@ public class DepenseService {
         return depenseRepository.findAll();
     }
 
-    public List<Depense> getDepensesByCustomerAndDate(int customerId , LocalDateTime dateTime) {
-        return depenseRepository.findDepenseByCustomerAndDate(customerId , dateTime);
+    public List<Depense> getDepensesTicketByCustomerAndDate(int customerId , LocalDateTime dateTime) {
+        return depenseRepository.findDepenseTicketByCustomerAndDate(customerId , dateTime);
     }
 
-    public double sommeDepenses(int customerId , LocalDateTime dateTime) {
+    public List<Depense> getDepensesLeadByCustomerAndDate(int customerId , LocalDateTime dateTime) {
+        return depenseRepository.findDepenseLeadByCustomerAndDate(customerId , dateTime);
+    }
+
+    public double sommeDepensesTicket(int customerId , LocalDateTime dateTime) {
         double valiny =  0.0;
-        List<Depense> depenses = this.getDepensesByCustomerAndDate(customerId , dateTime);
+        List<Depense> depenses = this.getDepensesTicketByCustomerAndDate(customerId , dateTime);
         for (Depense depense : depenses) {
             valiny += depense.getMontant().doubleValue();
         }
         return valiny;
     }
+
+    public double sommeDepensesLead(int customerId , LocalDateTime dateTime) {
+        double valiny =  0.0;
+        List<Depense> depenses = this.getDepensesLeadByCustomerAndDate(customerId , dateTime);
+        for (Depense depense : depenses) {
+            valiny += depense.getMontant().doubleValue();
+        }
+        return valiny;
+    }
+
+    public double sommeDepenses(int customerId , LocalDateTime dateTime) {
+        return this.sommeDepensesTicket(customerId , dateTime) + sommeDepensesLead(customerId , dateTime);
+    }
+
+    
 
     
 

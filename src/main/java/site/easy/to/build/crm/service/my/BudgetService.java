@@ -44,17 +44,6 @@ public class BudgetService {
         return valiny;
     }
 
-    public double budgetActuel(int customerId , LocalDateTime dateTime) {
-        double budgetActuel;
-        double sommeBudget = this.sommeBudget(customerId , dateTime);
-        double sommeDepense = this.depenseService.sommeDepenses(customerId , dateTime);
-
-        System.out.println("Budget somme: " + sommeBudget);
-        System.out.println("Depense somme: " + sommeDepense);
-        budgetActuel = sommeBudget - sommeDepense;
-
-        return budgetActuel;
-    }
 
     public double pourcentageBudget(int customerId , LocalDateTime dateTime , double montantDepense) {
         double sommeBudget = this.sommeBudget(customerId , dateTime);
@@ -67,6 +56,7 @@ public class BudgetService {
         double valiny = (sommeDepense * 100) / sommeBudget;
 
         if (valiny >= pourcentage) {
+            System.out.println("Pourcentage: " + valiny);
             return valiny;
         }
         System.out.println("Pourcentage: " + valiny);

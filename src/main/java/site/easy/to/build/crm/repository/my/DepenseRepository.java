@@ -14,5 +14,8 @@ import java.util.List;
 @Repository
 public interface DepenseRepository extends JpaRepository<Depense, Integer> {
     @Query("select d from Depense d where d.ticket.customer.customerId = :customerId AND d.date <= :dateTime")
-    List<Depense> findDepenseByCustomerAndDate(@Param("customerId") int customerId ,@Param("dateTime") LocalDateTime dateTime);
+    List<Depense> findDepenseTicketByCustomerAndDate(@Param("customerId") int customerId ,@Param("dateTime") LocalDateTime dateTime);
+
+    @Query("select d from Depense d where d.lead.customer.customerId = :customerId AND d.date <= :dateTime")
+    List<Depense> findDepenseLeadByCustomerAndDate(@Param("customerId") int customerId ,@Param("dateTime") LocalDateTime dateTime);
 }
