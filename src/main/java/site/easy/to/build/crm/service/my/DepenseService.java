@@ -7,6 +7,7 @@ import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.my.Depense;
+import site.easy.to.build.crm.entity.my.api.LeadModel;
 import site.easy.to.build.crm.entity.my.api.TicketModel;
 import site.easy.to.build.crm.repository.my.DepenseRepository;
 
@@ -108,6 +109,21 @@ public class DepenseService {
         }
 
         return ticketModels;
+   }
+
+   public List<LeadModel> getAllLeadModel(LocalDateTime dateTime) {
+        List<LeadModel> leadModels = new ArrayList<>();
+        List<Lead> leads = this.getAllLeadsByDate(dateTime);
+        for (Lead lead : leads) {
+            LeadModel leadModel = new LeadModel();
+            leadModel.setIdLead(lead.getLeadId());
+            leadModel.setCustomerName(lead.getCustomer().getName());
+            leadModel.setDateTime(lead.getCreatedAt());
+            leadModel.setMontantDepense(Double.parseDouble(lead.getMontantDepense()));
+
+            leadModels.add(leadModel);
+        }
+        return leadModels;
    }
 
 
