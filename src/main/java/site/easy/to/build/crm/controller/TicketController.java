@@ -17,6 +17,7 @@ import site.easy.to.build.crm.entity.settings.TicketEmailSettings;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
 import site.easy.to.build.crm.service.customer.CustomerService;
+import site.easy.to.build.crm.service.my.BudgetService;
 import site.easy.to.build.crm.service.my.DepenseService;
 import site.easy.to.build.crm.service.settings.TicketEmailSettingsService;
 import site.easy.to.build.crm.service.ticket.TicketService;
@@ -44,11 +45,12 @@ public class TicketController {
     private final GoogleGmailApiService googleGmailApiService;
     private final EntityManager entityManager;
     private final DepenseService depenseService;
+    private final BudgetService budgetService;
 
 
     @Autowired
     public TicketController(TicketService ticketService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
-                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager , DepenseService depenseService) {
+                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager , DepenseService depenseService, BudgetService budgetService) {
         this.ticketService = ticketService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
@@ -57,6 +59,7 @@ public class TicketController {
         this.googleGmailApiService = googleGmailApiService;
         this.entityManager = entityManager;
         this.depenseService = depenseService;
+        this.budgetService = budgetService;
     }
 
     @GetMapping("/show-ticket/{id}")
