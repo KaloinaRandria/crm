@@ -1,6 +1,7 @@
 package site.easy.to.build.crm.controller;
 
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -135,7 +136,7 @@ public class TicketController {
     public String createTicket(@ModelAttribute("ticket") @Validated Ticket ticket, BindingResult bindingResult, @RequestParam("customerId") int customerId,
                                @RequestParam Map<String, String> formParams, Model model,
                                @RequestParam("employeeId") int employeeId, Authentication authentication , @RequestParam(name = "montantDepense") String montantDepense ,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes , HttpSession session) {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -184,6 +185,14 @@ public class TicketController {
         depense.setMontant(montantDepense);
         depense.setDate(LocalDateTime.now());
         depense.setTicket(ticket);
+
+//        popup
+        if (budgetService.depenseDepasseBudget(customer.getCustomerId() , LocalDateTime.now(), Double.parseDouble(montantDepense))) {
+            session.setAttribute("ticket", ticket);
+            session.setAttribute("depense", depense);
+            model.addAttribute("popUp" , true);
+            return "ticket/create-ticket";
+        }
 
         double pourcentageDepense = budgetService.pourcentageBudget(customer.getCustomerId() , LocalDateTime.now() , Double.parseDouble(montantDepense));
         redirectAttributes.addAttribute("alertMessage" , "");
@@ -340,6 +349,7 @@ public class TicketController {
         }
 
         ticketService.delete(ticket);
+        depenseService.deleteByTicket(ticket);
         return "redirect:/employee/ticket/assigned-tickets";
     }
 
@@ -396,5 +406,20 @@ public class TicketController {
                 }
             }
         }
+    }
+
+    @PostMapping("/annuler")
+    public String annulerTicket() {
+        return "redirect:/employee/ticket/create-ticket";
+    }
+
+    @PostMapping("/confirmer")
+    public String confirmerTicker(HttpSession session) {
+        Ticket ticket = (Ticket) session.getAttribute("ticket");
+        ticketService.save(ticket);
+        Depense depense = (Depense) session.getAttribute("depense");
+        depenseService.saveDepense(depense);
+
+        return "redirect:/employee/ticket/assigned-tickets";
     }
 }

@@ -63,6 +63,15 @@ public class BudgetService {
         return 0.0;
     }
 
+    public boolean depenseDepasseBudget(int customerId , LocalDateTime dateTime , double montantDepense) {
+        double sommeBudget = this.sommeBudget(customerId , dateTime);
+        double sommeDepense = this.depenseService.sommeDepenses(customerId , dateTime) + montantDepense;
+        if (sommeDepense >= sommeBudget) {
+            return true;
+        }
+        return false;
+    }
+
 
 
 

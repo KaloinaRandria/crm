@@ -2,7 +2,10 @@ package site.easy.to.build.crm.service.my;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.my.Depense;
 import site.easy.to.build.crm.repository.my.DepenseRepository;
 
@@ -55,7 +58,17 @@ public class DepenseService {
         return this.sommeDepensesTicket(customerId , dateTime) + sommeDepensesLead(customerId , dateTime);
     }
 
-    
+    @Transactional
+    public void deleteByTicket(Ticket ticket) {
+        depenseRepository.deleteByTicket(ticket);
+    }
+
+    @Transactional
+    public void deleteByLead(Lead lead) {
+        depenseRepository.deleteByLead(lead);
+    }
+
+
 
     
 

@@ -20,6 +20,45 @@
 <![endif]-->
 </head>
 
+<!-- Modal Popup -->
+<div id="budgetExceededModal" class="modal" tabindex="-1" role="dialog" th:attr="style=${popUp} ? 'display:block;' : 'display:none;'">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Alerte Dépense</h5>
+            </div>
+            <div class="modal-body">
+                <p>La dépense dépasse le budget autorisé. Voulez-vous continuer ?</p>
+            </div>
+            <div class="modal-footer">
+                <!-- Form pour Annuler -->
+                <form th:action="@{/employee/lead/annuler}" method="post">
+                    <button type="submit" class="btn btn-secondary" id="cancelButton">Annuler</button>
+                </form>
+
+                <!-- Form pour Confirmer -->
+                <form th:action="@{/employee/lead/confirmer}" method="post">
+                    <button type="submit" class="btn btn-primary" id="confirmExpense">Confirmer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var showModal = [[${popUp}]] ? true : false; // Correction de la variable
+        if (showModal) {
+            $('#budgetExceededModal').modal('show');
+        }
+
+        // Fermeture du modal après un clic sur un bouton
+        $("#confirmExpense, #cancelButton").click(function() {
+            $("#budgetExceededModal").modal("hide");
+        });
+    });
+</script>
+
 <body class="skin-blue fixed-layout">
 <!-- ============================================================== -->
 <!-- Preloader - style you can find in spinners.css -->

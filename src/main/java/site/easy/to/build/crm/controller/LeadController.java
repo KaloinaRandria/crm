@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -179,7 +180,7 @@ public class LeadController {
                              @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId,
                              Authentication authentication, @RequestParam("allFiles")@Nullable String files,
                              @RequestParam("folderId") @Nullable String folderId, Model model , @RequestParam(name = "montantDepense") String montantDepense ,
-                             RedirectAttributes redirectAttributes) throws JsonProcessingException {
+                             RedirectAttributes redirectAttributes  , HttpSession session) throws JsonProcessingException {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -225,6 +226,15 @@ public class LeadController {
         depense.setMontant(montantDepense);
         depense.setDate(LocalDateTime.now());
         depense.setLead(lead);
+
+        //        popup
+        if (budgetService.depenseDepasseBudget(customer.getCustomerId() , LocalDateTime.now(), Double.parseDouble(montantDepense))) {
+            session.setAttribute("lead", lead);
+            session.setAttribute("depense", depense);
+            model.addAttribute("popUp" , true);
+            return "lead/create-lead";
+        }
+
 
         double pourcentageDepense = budgetService.pourcentageBudget(customer.getCustomerId() , LocalDateTime.now() , Double.parseDouble(montantDepense));
         redirectAttributes.addAttribute("alertMessage" , "");
@@ -490,8 +500,8 @@ public class LeadController {
         if(!AuthorizationUtil.checkIfUserAuthorized(employee,loggedInUser)) {
             return "error/access-denied";
         }
-
         leadService.delete(lead);
+        depenseService.deleteByLead(lead);
         return "redirect:/employee/lead/created-leads";
     }
 
@@ -638,5 +648,23 @@ public class LeadController {
         model.addAttribute("attachments", attachments);
         model.addAttribute("folders", folders);
         model.addAttribute("hasGoogleDriveAccess", hasGoogleDriveAccess);
+    }
+
+    @PostMapping("/annuler")
+    public String annulerTicket() {
+        return "redirect:/employee/lead/create";
+    }
+
+    @PostMapping("/confirmer")
+    public String confirmerTicker(Authentication authentication ,  HttpSession session) {
+        Lead lead = (Lead) session.getAttribute("lead");
+        leadService.save(lead);
+        Depense depense = (Depense) session.getAttribute("depense");
+        depenseService.saveDepense(depense);
+
+        if(AuthorizationUtil.hasRole(authentication, "ROLE_MANAGER")) {
+            return "redirect:/employee/lead/created-leads";
+        }
+        return "redirect:/employee/lead/assigned-leads";
     }
 }
