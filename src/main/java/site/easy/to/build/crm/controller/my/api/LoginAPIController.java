@@ -21,7 +21,6 @@ public class LoginAPIController {
     @GetMapping("/checkSession")
     public boolean loginAPI(@RequestParam("sessionId") String sessionId , HttpServletRequest request) {
         HttpSession session = loginService.getSessionById(sessionId , request);
-
         return loginService.hasRoleManager(session);
     }
 }
