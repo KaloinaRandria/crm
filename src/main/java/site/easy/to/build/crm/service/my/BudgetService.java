@@ -84,6 +84,7 @@ public class BudgetService {
 
         for (Budget budget : budgets) {
             BudgetModel budgetModel = new BudgetModel();
+            budgetModel.setIdCustomer(budget.getCustomer().getCustomerId());
             budgetModel.setIdBudgetModel(budget.getIdBudget());
             budgetModel.setCustomerName(budget.getCustomer().getName());
             budgetModel.setMontant(budget.getMontant().doubleValue());
