@@ -27,4 +27,10 @@ public class TauxService {
     public double getTaux() {
         return  this.getAllTaux().get(0).getValeur();
     }
+
+    public Taux getTauxObject() {
+        return this.getAllTaux().get(0);
+    }
+
+
 }
