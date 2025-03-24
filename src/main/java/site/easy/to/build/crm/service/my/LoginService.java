@@ -26,7 +26,7 @@ public class LoginService {
         }
         return false;
     }
-    private HttpSession getSessionById(String sessionId, HttpServletRequest request) {
+    public HttpSession getSessionById(String sessionId, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getId().equals(sessionId)) {
             return session;
