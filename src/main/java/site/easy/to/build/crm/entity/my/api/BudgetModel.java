@@ -12,6 +12,16 @@ public class BudgetModel {
 
     private LocalDateTime dateTime;
 
+    private int idCustomer;
+
+    public int getIdCustomer() {
+        return idCustomer;
+    }
+
+    public void setIdCustomer(int idCustomer) {
+        this.idCustomer = idCustomer;
+    }
+
     public int getIdBudgetModel() {
         return idBudgetModel;
     }
@@ -47,10 +57,11 @@ public class BudgetModel {
     public BudgetModel() {
     }
 
-    public BudgetModel(int idBudgetModel, String customerName, double montant, LocalDateTime dateTime) {
+    public BudgetModel(int idBudgetModel, String customerName, double montant, LocalDateTime dateTime , int idCustomer) {
         this.idBudgetModel = idBudgetModel;
         this.customerName = customerName;
         this.montant = montant;
         this.dateTime = dateTime;
+        this.idCustomer = idCustomer;
     }
 }
