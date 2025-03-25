@@ -130,6 +130,8 @@ public class ImportService {
                 ticketService.save(ticket);
                 depenseService.saveDepense(depense);
             }
+
+            depenseTempService.deleteDepenseTemp(depenseTemp);
         }
     }
 

@@ -38,6 +38,10 @@ public class DepenseTempService {
         return depenseTempRepository.findAll();
     }
 
+    public void deleteDepenseTemp(DepenseTemp depenseTemp) {
+        depenseTempRepository.delete(depenseTemp);
+    }
+
     public void importCSVDepenseTemp(String csvFile) {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
                 .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
@@ -70,7 +74,7 @@ public class DepenseTempService {
 
     public void importCsvTicketLeadTemporary(String csvFile)throws Exception {
         try {
-            // Définir un parser avec le séparateur ';'
+           
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader reader = new CSVReaderBuilder(new FileReader(csvFile))
                     .withCSVParser(parser)
@@ -106,7 +110,7 @@ public class DepenseTempService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception(e.getMessage());
         }
     }
 }
