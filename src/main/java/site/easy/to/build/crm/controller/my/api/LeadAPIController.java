@@ -47,9 +47,9 @@ public class LeadAPIController {
     }
 
     @PostMapping("/update")
-    public String updateLead(@RequestParam("idLead") int idLead ,@RequestParam("newMontant") double newMontant) {
+    public String updateLead(@RequestParam("idLead") int idLead ,@RequestParam("newMontant") String newMontant) {
         Depense depense = depenseService.getDepenseByIdLead(idLead);
-        depense.setMontant(new BigDecimal(newMontant));
+        depense.setMontant(BigDecimal.valueOf(Double.parseDouble(newMontant)));
         depense.setDate(LocalDateTime.now());
 
         depenseService.saveDepense(depense);

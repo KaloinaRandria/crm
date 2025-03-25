@@ -50,9 +50,9 @@ public class TicketAPIController {
     }
 
     @PostMapping("/update")
-    public String updateTicket(@RequestParam("idTicket") int idTicket ,@RequestParam("newMontant") double newMontant) {
+    public String updateTicket(@RequestParam("idTicket") int idTicket ,@RequestParam("newMontant") String newMontant) {
         Depense depense = depenseService.getDepenseByIdTicket(idTicket);
-        depense.setMontant(new BigDecimal(newMontant));
+        depense.setMontant(BigDecimal.valueOf(Double.parseDouble(newMontant)));
         depense.setDate(LocalDateTime.now());
 
         depenseService.saveDepense(depense);
