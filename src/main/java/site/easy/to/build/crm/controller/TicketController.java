@@ -1,6 +1,7 @@
 package site.easy.to.build.crm.controller;
 
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -11,11 +12,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import site.easy.to.build.crm.entity.*;
+import site.easy.to.build.crm.entity.my.Depense;
 import site.easy.to.build.crm.entity.settings.TicketEmailSettings;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
 import site.easy.to.build.crm.service.customer.CustomerService;
+import site.easy.to.build.crm.service.my.BudgetService;
+import site.easy.to.build.crm.service.my.DepenseService;
 import site.easy.to.build.crm.service.settings.TicketEmailSettingsService;
 import site.easy.to.build.crm.service.ticket.TicketService;
 import site.easy.to.build.crm.service.user.UserService;
@@ -41,11 +46,13 @@ public class TicketController {
     private final TicketEmailSettingsService ticketEmailSettingsService;
     private final GoogleGmailApiService googleGmailApiService;
     private final EntityManager entityManager;
+    private final DepenseService depenseService;
+    private final BudgetService budgetService;
 
 
     @Autowired
     public TicketController(TicketService ticketService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
-                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager) {
+                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager , DepenseService depenseService, BudgetService budgetService) {
         this.ticketService = ticketService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
@@ -53,6 +60,8 @@ public class TicketController {
         this.ticketEmailSettingsService = ticketEmailSettingsService;
         this.googleGmailApiService = googleGmailApiService;
         this.entityManager = entityManager;
+        this.depenseService = depenseService;
+        this.budgetService = budgetService;
     }
 
     @GetMapping("/show-ticket/{id}")
@@ -92,10 +101,11 @@ public class TicketController {
     }
 
     @GetMapping("/assigned-tickets")
-    public String showEmployeeTicket(Model model, Authentication authentication) {
+    public String showEmployeeTicket(Model model, Authentication authentication ,@ModelAttribute("alertMessage") String alertMessage) {
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         List<Ticket> tickets = ticketService.findEmployeeTickets(userId);
         model.addAttribute("tickets",tickets);
+        model.addAttribute("alertMessage",alertMessage);
         return "ticket/my-tickets";
     }
     @GetMapping("/create-ticket")
@@ -125,7 +135,8 @@ public class TicketController {
     @PostMapping("/create-ticket")
     public String createTicket(@ModelAttribute("ticket") @Validated Ticket ticket, BindingResult bindingResult, @RequestParam("customerId") int customerId,
                                @RequestParam Map<String, String> formParams, Model model,
-                               @RequestParam("employeeId") int employeeId, Authentication authentication) {
+                               @RequestParam("employeeId") int employeeId, Authentication authentication , @RequestParam(name = "montantDepense") String montantDepense ,
+                               RedirectAttributes redirectAttributes , HttpSession session) {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -169,7 +180,29 @@ public class TicketController {
         ticket.setEmployee(employee);
         ticket.setCreatedAt(LocalDateTime.now());
 
+
+        Depense depense = new Depense();
+        depense.setMontant(montantDepense);
+        depense.setDate(LocalDateTime.now());
+        depense.setTicket(ticket);
+
+//        popup
+        if (budgetService.depenseDepasseBudget(customer.getCustomerId() , LocalDateTime.now(), Double.parseDouble(montantDepense))) {
+            session.setAttribute("ticket", ticket);
+            session.setAttribute("depense", depense);
+            model.addAttribute("popUp" , true);
+            return "ticket/create-ticket";
+        }
+
+        double pourcentageDepense = budgetService.pourcentageBudget(customer.getCustomerId() , LocalDateTime.now() , Double.parseDouble(montantDepense));
+        redirectAttributes.addAttribute("alertMessage" , "");
+
+        if (pourcentageDepense > 0) {
+            redirectAttributes.addAttribute("alertMessage" , pourcentageDepense + " % du budget utiliser");
+        }
+
         ticketService.save(ticket);
+        depenseService.saveDepense(depense);
 
         return "redirect:/employee/ticket/assigned-tickets";
     }
@@ -316,6 +349,7 @@ public class TicketController {
         }
 
         ticketService.delete(ticket);
+        depenseService.deleteByTicket(ticket);
         return "redirect:/employee/ticket/assigned-tickets";
     }
 
@@ -372,5 +406,20 @@ public class TicketController {
                 }
             }
         }
+    }
+
+    @PostMapping("/annuler")
+    public String annulerTicket() {
+        return "redirect:/employee/ticket/create-ticket";
+    }
+
+    @PostMapping("/confirmer")
+    public String confirmerTicker(HttpSession session) {
+        Ticket ticket = (Ticket) session.getAttribute("ticket");
+        ticketService.save(ticket);
+        Depense depense = (Depense) session.getAttribute("depense");
+        depenseService.saveDepense(depense);
+
+        return "redirect:/employee/ticket/assigned-tickets";
     }
 }

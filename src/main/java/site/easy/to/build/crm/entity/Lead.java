@@ -2,7 +2,9 @@ package site.easy.to.build.crm.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,6 +61,11 @@ public class Lead {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Transient
+    @NotNull(message = "Amount Required")
+    @Positive(message = "Montant negatif")
+    private String montantDepense;
 
     public Lead() {
     }
@@ -216,6 +223,14 @@ public class Lead {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getMontantDepense() {
+        return montantDepense;
+    }
+
+    public void setMontantDepense(String montantDepense) {
+        this.montantDepense = montantDepense;
     }
 }
 
