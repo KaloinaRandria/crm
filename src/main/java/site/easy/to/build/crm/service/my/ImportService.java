@@ -1,6 +1,9 @@
 package site.easy.to.build.crm.service.my;
 
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.service.customer.CustomerServiceImpl;
@@ -9,28 +12,34 @@ import java.io.FileReader;
 
 @Service
 public class ImportService {
+    @Autowired
     CustomerServiceImpl customerService;
 
     public void importCSVCustomer(String csvFile) {
-        try {
-            CSVReader csvReader = new CSVReader(new FileReader(csvFile));
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
+                .withCSVParser(new CSVParserBuilder().withSeparator(';').build()) // Définir ';' comme séparateur
+                .build()) {
+
             String[] column;
+            csvReader.readNext(); // Ignorer l'en-tête
 
-            csvReader.readNext();
-
-            Customer customer;
             while ((column = csvReader.readNext()) != null) {
-                customer = new Customer();
-                customer.setEmail(column[0]);
-                customer.setName(column[1]);
+                if (column.length < 2) {
+                    System.err.println("Ligne invalide détectée : " + String.join(";", column));
+                    continue; // Ignorer les lignes incorrectes
+                }
+
+                Customer customer = new Customer();
+                customer.setEmail(column[0].trim());
+                customer.setName(column[1].trim());
                 customer.setPhone("0345623498");
                 customer.setCountry("MDG");
 
                 customerService.save(customer);
             }
-            csvReader.close();
+
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur lors de l'importation du fichier CSV", e);
         }
     }
 }
