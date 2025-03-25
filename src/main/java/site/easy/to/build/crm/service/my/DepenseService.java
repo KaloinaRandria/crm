@@ -108,6 +108,8 @@ public class DepenseService {
             ticketModels.add(ticketModel);
         }
 
+       System.out.println("Ticket List size :" + tickets.size());
+
         return ticketModels;
    }
 

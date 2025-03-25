@@ -72,15 +72,29 @@
               <h4 class="card-title">Importer un fichier CSV</h4>
               <form th:action="@{/manager/import/insert-csv}" method="post" enctype="multipart/form-data">
 
+                <div th:if="${success}" class="alert alert-success">
+                  <span th:text="${success}"></span>
+                </div>
+
+                <div th:if="${error}" class="alert alert-success">
+                  <span th:text="${error}"></span>
+                </div>
                 <label class="m-t-20" for="file1">Customer CSV :</label>
                 <div class="input-group">
                   <input type="file" id="file1" name="file1" class="form-control" required>
+                </div>
+
+                <label class="m-t-20" for="file3">Budget CSV :</label>
+                <div class="input-group">
+                  <input type="file" id="file3" name="file3" class="form-control">
                 </div>
 
                 <label class="m-t-20" for="file2">Ticket-Lead CSV :</label>
                 <div class="input-group">
                   <input type="file" id="file2" name="file2" class="form-control">
                 </div>
+
+
 
                 <button type="submit" class="btn btn-primary m-t-20">Importer</button>
               </form>

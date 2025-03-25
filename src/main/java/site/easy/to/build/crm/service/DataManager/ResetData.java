@@ -29,6 +29,8 @@ public class ResetData {
         jdbcTemplate.execute("TRUNCATE TABLE trigger_ticket");
         jdbcTemplate.execute("TRUNCATE TABLE budget");
         jdbcTemplate.execute("TRUNCATE TABLE depense");
+        jdbcTemplate.execute("TRUNCATE TABLE customer");
+        jdbcTemplate.execute("TRUNCATE TABLE depense_temp");
 
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
     }
