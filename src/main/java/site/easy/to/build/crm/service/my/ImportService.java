@@ -5,6 +5,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
@@ -67,7 +68,7 @@ public class ImportService {
         }
     }
 
-    public void importCSVBudget(String csvFile) {
+    public void importCSVBudget(String csvFile) throws Exception {
         try(CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
                 .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
                 .build()) {
@@ -130,6 +131,15 @@ public class ImportService {
                 depenseService.saveDepense(depense);
             }
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void importAllCSV(String csvFile1 , String csvFile2 , String csvFile3 , User manager)throws  Exception {
+
+        this.importCSVCustomer(csvFile1 , manager);
+        this.importCSVBudget(csvFile2);
+        depenseTempService.importCsvTicketLeadTemporary(csvFile3);
+        this.importCSVTicketLead(manager);
     }
 
 

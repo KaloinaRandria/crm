@@ -45,22 +45,23 @@ public class ImportController {
         int userId =  authenticationUtils.getLoggedInUserId(authentication);
         User loggedInUser = userService.findById(userId);
 
-
+        if (customerFile.isEmpty() || ticketLeadFile.isEmpty() || budgetFile.isEmpty()) {
+            model.addAttribute("error", "File required");
+        }
+        
 
         String absolutePath = "E:\\dev (ITUniversity)\\L3\\S6\\EVALUATION\\data";
         try {
-            importService.importCSVCustomer(absolutePath + File.separator + customerFile.getOriginalFilename() , loggedInUser);
-            importService.importCSVBudget(absolutePath + File.separator + budgetFile.getOriginalFilename());
-            depenseTempService.importCsvTicketLeadTemporary(absolutePath + File.separator + ticketLeadFile.getOriginalFilename());
-            importService.importCSVTicketLead(loggedInUser);
+
+            importService.importAllCSV(absolutePath + File.separator + customerFile.getOriginalFilename() ,
+                    absolutePath + File.separator + budgetFile.getOriginalFilename(),
+                    absolutePath + File.separator + ticketLeadFile.getOriginalFilename() ,
+                    loggedInUser);
 
             model.addAttribute("success", "Donnees inserer avec succes");
         } catch (Exception e) {
-            if (e.getMessage() != null) {
                 model.addAttribute("error", e.getMessage());
-            }
-            throw new RuntimeException(e);
-
+            return "my/import-csv";
         }
 
         return "my/import-csv";

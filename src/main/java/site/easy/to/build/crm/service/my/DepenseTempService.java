@@ -29,8 +29,6 @@ public class DepenseTempService {
     @Autowired
     CustomerServiceImpl customerService;
 
-    @PersistenceContext
-    EntityManager entityManager;
 
     public void saveDepenseTemp(DepenseTemp depenseTemp) {
         depenseTempRepository.save(depenseTemp);
@@ -69,9 +67,8 @@ public class DepenseTempService {
         }
     }
 
-    @Transactional
-    public String importCsvTicketLeadTemporary(String csvFile) throws SQLException {
-        String errorMessage ="";
+
+    public void importCsvTicketLeadTemporary(String csvFile)throws Exception {
         try {
             // Définir un parser avec le séparateur ';'
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
@@ -85,8 +82,6 @@ public class DepenseTempService {
             // Ignorer la première ligne (en-têtes)
             allData.remove(0);
 
-            int i = 1;
-            boolean isError = false;
             for (String[] column : allData) {
                 try {
 
@@ -102,26 +97,16 @@ public class DepenseTempService {
                     depenseTemp.setStatus(column[3]);
                     depenseTemp.setExpense(CSVFormatUtil.refactorAmountFormat(column[4]));
 
+                    this.saveDepenseTemp(depenseTemp);
 
-                    entityManager.persist(depenseTemp);
 
                 } catch (Exception e) {
-                    isError = true;
-                    errorMessage = "Ligne "+i +" :"+ Arrays.toString(column) +" MESSAGE : "+e.getMessage();
-                    System.out.println(errorMessage);
-                    break;
-                }
-                i++;
-            }
-            if (isError == true)
-            {
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return errorMessage;
-            }
+                    throw new Exception(e.getMessage());
 
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "ok";
     }
 }

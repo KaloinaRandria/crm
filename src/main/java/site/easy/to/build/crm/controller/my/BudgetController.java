@@ -54,7 +54,9 @@ public class BudgetController {
 
     @PostMapping("/insert-budget")
     public String addBudgetCustomer( Model model, @ModelAttribute("budget") @Validated Budget budget, BindingResult bindingResult , Authentication authentication ,
-                                     @RequestParam("customerId") int customerId ,@RequestParam("date")  String date ,@RequestParam(name = "montant") String montant) {
+                                     @RequestParam("customerId") int customerId ,@RequestParam("date")  String date ,
+                                     @RequestParam(name = "montant") String montant) throws Exception
+        {
         int userId =  authenticationUtils.getLoggedInUserId(authentication);
         User loggedInUser = userService.findById(userId);
 

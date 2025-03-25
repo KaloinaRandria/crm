@@ -51,8 +51,17 @@ public class Budget {
         this.montant = montant;
     }
 
-    public void setMontant(String montant) {
-        this.setMontant(new BigDecimal(montant));
+    public void setMontant(String montant) throws Exception {
+
+        try {
+            this.setMontant(BigDecimal.valueOf(Double.parseDouble(montant)));
+        } catch (Exception e) {
+            throw new Exception("Amount Value not Conform");
+        }
+
+        if (BigDecimal.valueOf(Double.parseDouble(montant)).compareTo(BigDecimal.valueOf(0)) <= 0) {
+            throw new Exception("Amount must be Positive");
+        }
     }
 
     public LocalDateTime getDate() {
