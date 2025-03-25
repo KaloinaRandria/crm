@@ -47,8 +47,14 @@
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"  class="nav-small-cap">--- Budget</li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" >
                     <a class="waves-effect waves-dark" th:href="${home + 'manager/budget/show-budget-page'}">
-<!--                        <i class="fa-money"></i>-->
                         <span class="hide-menu">Budget Customer</span>
+                    </a>
+                </li>
+
+                <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"  class="nav-small-cap">--- Import Data</li>
+                <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" >
+                    <a class="waves-effect waves-dark" th:href="${home + 'manager/import/show-import-csv'}">
+                        <span class="hide-menu">Import CSV</span>
                     </a>
                 </li>
 
