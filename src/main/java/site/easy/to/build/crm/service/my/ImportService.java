@@ -43,6 +43,26 @@ public class ImportService {
     @Autowired
     TicketServiceImpl ticketService;
 
+    List<String> ticketStatus = List.of("open" , "assigned" ,  "on-hold" , "in-progress"
+    , "resolved" , "closed" , "reopened" , "pending-customer-response" , "escalated" , "archived");
+
+    List<String> leadStatus = List.of("meeting-to-schedule" , "assign-to-sales" , "archived" , "success" );
+
+    public boolean checkTicketStatus(String status) {
+        if (ticketStatus.contains(status)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkLeadStatus(String status) {
+        if (leadStatus.contains(status)) {
+            return true;
+        }
+        return false;
+    }
+
+
     public void importCSVCustomer(String csvFile , User manager) {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
                 .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
@@ -90,14 +110,21 @@ public class ImportService {
         }
     }
 
-    public void importCSVTicketLead(User user) {
+    public void importCSVTicketLead(User user)throws Exception {
         List<DepenseTemp> depenseTemps = depenseTempService.getAllDepenseTemp();
+        int i = 1;
         for (DepenseTemp depenseTemp : depenseTemps) {
             Lead lead = new Lead();
             Ticket ticket = new Ticket();
             Depense depense = new Depense();
-            if (depenseTemp.getType().equals("lead")) {
+            if (!depenseTemp.getType().toLowerCase().equals("lead") && !depenseTemp.getType().toLowerCase().equals("ticket")) {
+                throw new Exception("Error to line "+ i +"Type not valid" + depenseTemp.getType());
+            }
+            if (depenseTemp.getType().toLowerCase().equals("lead")) {
                 lead.setCustomer(customerService.findByEmail(depenseTemp.getCustomerEmail()));
+                if (!this.checkLeadStatus(depenseTemp.getStatus())) {
+                    throw new Exception("Error to line "+ i +" Status not found " + depenseTemp.getStatus());
+                }
                 lead.setStatus(depenseTemp.getStatus());
                 lead.setName(depenseTemp.getSubjectOrName());
                 lead.setMontantDepense(String.valueOf(depenseTemp.getExpense()));
@@ -113,8 +140,11 @@ public class ImportService {
                 leadService.save(lead);
                 depenseService.saveDepense(depense);
             }
-            if (depenseTemp.getType().equals("ticket")) {
+            if (depenseTemp.getType().toLowerCase().equals("ticket")) {
                 ticket.setCustomer(customerService.findByEmail(depenseTemp.getCustomerEmail()));
+                if (!checkTicketStatus(depenseTemp.getStatus())) {
+                    throw new Exception("Error to line "+ i +" Status not found "+ depenseTemp.getStatus());
+                }
                 ticket.setStatus(depenseTemp.getStatus());
                 ticket.setSubject(depenseTemp.getSubjectOrName());
                 ticket.setMontantDepense(String.valueOf(depenseTemp.getExpense()));
@@ -132,6 +162,7 @@ public class ImportService {
             }
 
             depenseTempService.deleteDepenseTemp(depenseTemp);
+            i++;
         }
     }
 

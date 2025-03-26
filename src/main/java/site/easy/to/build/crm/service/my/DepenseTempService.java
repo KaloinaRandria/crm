@@ -74,7 +74,7 @@ public class DepenseTempService {
 
     public void importCsvTicketLeadTemporary(String csvFile)throws Exception {
         try {
-           
+
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader reader = new CSVReaderBuilder(new FileReader(csvFile))
                     .withCSVParser(parser)
@@ -85,20 +85,20 @@ public class DepenseTempService {
 
             // Ignorer la première ligne (en-têtes)
             allData.remove(0);
-
+            int i = 1;
             for (String[] column : allData) {
                 try {
 
                     if (customerService.findByEmail(column[0]) == null) {
-                        throw new Exception("Customer doesn't exists");
+                        throw new Exception("Error :" +  i  + " Customer doesn't exists" + column[0]);
                     }
 
                     DepenseTemp depenseTemp = new DepenseTemp();
 
-                    depenseTemp.setCustomerEmail(column[0]);
-                    depenseTemp.setSubjectOrName(column[1]);
-                    depenseTemp.setType(column[2]);
-                    depenseTemp.setStatus(column[3]);
+                    depenseTemp.setCustomerEmail(column[0].trim());
+                    depenseTemp.setSubjectOrName(column[1].trim());
+                    depenseTemp.setType(column[2].trim());
+                    depenseTemp.setStatus(column[3].trim());
                     depenseTemp.setExpense(CSVFormatUtil.refactorAmountFormat(column[4]));
 
                     this.saveDepenseTemp(depenseTemp);
@@ -108,6 +108,7 @@ public class DepenseTempService {
                     throw new Exception(e.getMessage());
 
                 }
+                i++;
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
