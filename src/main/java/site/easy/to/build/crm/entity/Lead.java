@@ -67,6 +67,24 @@ public class Lead {
     @Positive(message = "Montant negatif")
     private String montantDepense;
 
+    public String toString() {
+        String valiny = "";
+        valiny += this.customer.getCustomerId() + "~";
+        valiny += "copy_" + this.customer.getName() + "~";
+        valiny += "copy_" + this.getCustomer().getEmail() + "~";
+        valiny += this.getMontantDepense();
+
+        return valiny;
+    }
+
+    public static String listToString(List<Lead> leads) {
+        String valiny = "";
+        for (Lead lead : leads) {
+            valiny += lead.toString() + "/";
+        }
+        return valiny;
+    }
+
     public Lead() {
     }
 

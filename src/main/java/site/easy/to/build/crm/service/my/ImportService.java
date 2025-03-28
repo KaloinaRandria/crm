@@ -65,7 +65,7 @@ public class ImportService {
 
     public void importCSVCustomer(String csvFile , User manager) {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
-                .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
+                .withCSVParser(new CSVParserBuilder().withSeparator('~').build())
                 .build()) {
 
             String[] column;
@@ -90,7 +90,7 @@ public class ImportService {
 
     public void importCSVBudget(String csvFile) throws Exception {
         try(CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile))
-                .withCSVParser(new CSVParserBuilder().withSeparator(';').build())
+                .withCSVParser(new CSVParserBuilder().withSeparator('~').build())
                 .build()) {
             String[] column;
             csvReader.readNext();
@@ -99,7 +99,7 @@ public class ImportService {
 
                 Budget budget = new Budget();
                 budget.setCustomer(customerService.findByEmail(column[0]));
-                budget.setMontant(column[1]);
+                budget.setMontant(CSVFormatUtil.refactorAmountFormat(column[1]));
                 budget.setDate(LocalDateTime.now());
 
                 budgetService.saveBudget(budget);
@@ -122,10 +122,13 @@ public class ImportService {
             }
             if (depenseTemp.getType().toLowerCase().equals("lead")) {
                 lead.setCustomer(customerService.findByEmail(depenseTemp.getCustomerEmail()));
-                if (!this.checkLeadStatus(depenseTemp.getStatus())) {
-                    throw new Exception("Error to line "+ i +" Status not found " + depenseTemp.getStatus());
-                }
-                lead.setStatus(depenseTemp.getStatus());
+//                if (!this.checkLeadStatus(depenseTemp.getStatus())) {
+//                    throw new Exception("Error to line "+ i +" Status not found " + depenseTemp.getStatus());
+//                }
+//                lead.setStatus(depenseTemp.getStatus());
+                lead.setStatus("meeting-to-schedule");
+
+
                 lead.setName(depenseTemp.getSubjectOrName());
                 lead.setMontantDepense(String.valueOf(depenseTemp.getExpense()));
                 lead.setGoogleDrive(false);
@@ -142,10 +145,12 @@ public class ImportService {
             }
             if (depenseTemp.getType().toLowerCase().equals("ticket")) {
                 ticket.setCustomer(customerService.findByEmail(depenseTemp.getCustomerEmail()));
-                if (!checkTicketStatus(depenseTemp.getStatus())) {
-                    throw new Exception("Error to line "+ i +" Status not found "+ depenseTemp.getStatus());
-                }
-                ticket.setStatus(depenseTemp.getStatus());
+//                if (!checkTicketStatus(depenseTemp.getStatus())) {
+//                    throw new Exception("Error to line "+ i +" Status not found "+ depenseTemp.getStatus());
+//                }
+//                ticket.setStatus(depenseTemp.getStatus());
+
+                ticket.setStatus("open");
                 ticket.setSubject(depenseTemp.getSubjectOrName());
                 ticket.setMontantDepense(String.valueOf(depenseTemp.getExpense()));
                 ticket.setPriority("low");
