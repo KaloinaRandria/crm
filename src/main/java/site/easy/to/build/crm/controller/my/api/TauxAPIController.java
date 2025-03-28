@@ -21,10 +21,10 @@ public class TauxAPIController {
     }
 
     @PostMapping("/update")
-    public String updateTaux(@RequestParam("newTaux") double newTaux) {
+    public String updateTaux(@RequestParam("newTaux") String newTaux) {
         Taux taux = tauxService.getTauxObject();
         taux.setDate(LocalDateTime.now());
-        taux.setValeur(newTaux);
+        taux.setValeur(Double.parseDouble(newTaux));
 
         tauxService.saveTaux(taux);
 

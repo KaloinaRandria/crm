@@ -2,6 +2,8 @@ package site.easy.to.build.crm.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Ticket;
@@ -31,4 +33,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     long countByCustomerCustomerId(int customerId);
 
     void deleteAllByCustomer(Customer customer);
+
+    @Query("select t from Ticket t where t.customer.customerId = :customerId")
+    List<Ticket> findTicketByCustomerId(@Param("customerId") int customerId);
 }

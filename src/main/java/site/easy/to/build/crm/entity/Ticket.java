@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import org.hibernate.mapping.ToOne;
+import org.springframework.aop.target.LazyInitTargetSource;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "trigger_ticket")
@@ -54,6 +56,24 @@ public class Ticket {
     @NotNull(message = "Amount Required")
     @Positive(message = "Montant negatif")
     private String montantDepense;
+
+    public String toString() {
+        String valiny = "";
+        valiny += this.customer.getCustomerId() + "~";
+        valiny += "copy_" + this.customer.getName() + "~";
+        valiny += "copy_" + this.getCustomer().getEmail() + "~";
+        valiny += this.getMontantDepense();
+
+        return valiny;
+    }
+
+    public static String listToString(List<Ticket> tickets) {
+        String valiny = "";
+        for (Ticket ticket : tickets) {
+            valiny += ticket.toString() + "/";
+        }
+        return valiny;
+    }
 
     public Ticket() {
     }

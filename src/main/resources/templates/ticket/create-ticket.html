@@ -177,7 +177,7 @@
 <!--                                champ depense-->
                                 <label class="m-t-20" for="depense">Spent (Depense):</label>
                                 <div class="input-group">
-                                    <input th:field="*{montantDepense}" type="number" id="depense" name="montantDepense" class="form-control">
+                                    <input th:field="*{montantDepense}" step="0.01" type="number" id="depense" name="montantDepense" class="form-control">
                                 </div>
                                 <div class="input-group">
                                     <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('montantDepense')}" th:errors="*{montantDepense}"></span>

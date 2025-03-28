@@ -75,7 +75,7 @@ public class DepenseTempService {
     public void importCsvTicketLeadTemporary(String csvFile)throws Exception {
         try {
 
-            CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+            CSVParser parser = new CSVParserBuilder().withSeparator('~').build();
             CSVReader reader = new CSVReaderBuilder(new FileReader(csvFile))
                     .withCSVParser(parser)
                     .build();

@@ -1,5 +1,7 @@
 package site.easy.to.build.crm.service.ticket;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.my.api.TicketModel;
@@ -35,4 +37,6 @@ public interface TicketService {
     long countByCustomerCustomerId(int customerId);
 
     void deleteAllByCustomer(Customer customer);
+
+
 }

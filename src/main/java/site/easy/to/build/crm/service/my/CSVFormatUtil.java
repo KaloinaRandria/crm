@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CSVFormatUtil {
     public static String refactorAmountFormat(String column) {
+        column = column.replace("\'" , "");
         column = column.replace(".", "");
         column = column.replace(",", ".");
         column = column.replace(" ", "");

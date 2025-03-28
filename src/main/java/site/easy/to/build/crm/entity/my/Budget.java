@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.Lead;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 @Table(name = "budget")
 public class Budget {
@@ -26,6 +29,24 @@ public class Budget {
     @Column(name = "date")
     @NotNull(message = "Date is required")
     private LocalDateTime date;
+
+    public String toString() {
+        String valiny = "";
+        valiny += this.customer.getCustomerId() + "~";
+        valiny += "copy_" + this.customer.getName() + "~";
+        valiny += "copy_" + this.getCustomer().getEmail() + "~";
+        valiny += this.getMontant();
+
+        return valiny;
+    }
+
+    public static String listToString(List<Budget> budgets) {
+        String valiny = "";
+        for (Budget budget : budgets) {
+            valiny += budget.toString() + "/";
+        }
+        return valiny;
+    }
 
     public Integer getIdBudget() {
         return idBudget;
